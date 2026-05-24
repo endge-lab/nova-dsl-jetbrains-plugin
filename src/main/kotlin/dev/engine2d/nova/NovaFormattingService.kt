@@ -8,10 +8,13 @@ import com.intellij.psi.PsiFile
 
 class NovaFormattingService : AsyncDocumentFormattingService() {
   override fun getFeatures(): MutableSet<FormattingService.Feature> {
-    return mutableSetOf(FormattingService.Feature.FORMAT_FRAGMENTS)
+    return mutableSetOf(
+      FormattingService.Feature.AD_HOC_FORMATTING,
+      FormattingService.Feature.FORMAT_FRAGMENTS,
+    )
   }
 
-  override fun canFormat(file: PsiFile): Boolean = file.fileType == NovaFileType.INSTANCE
+  override fun canFormat(file: PsiFile): Boolean = file.fileType in SUPPORTED_FILE_TYPES
 
   override fun createFormattingTask(request: AsyncFormattingRequest): FormattingTask {
     return object : FormattingTask {
@@ -20,7 +23,8 @@ class NovaFormattingService : AsyncDocumentFormattingService() {
 
       override fun run() {
         if (cancelled) return
-        request.onTextReady(formatRanges(request.getDocumentText(), request.getFormattingRanges()))
+        val formatter = formatterFor(request.getContext().containingFile)
+        request.onTextReady(formatRanges(request.getDocumentText(), request.getFormattingRanges(), formatter))
       }
 
       override fun cancel(): Boolean {
@@ -32,11 +36,11 @@ class NovaFormattingService : AsyncDocumentFormattingService() {
 
   override fun getNotificationGroupId(): String = "Nova DSL"
 
-  override fun getName(): String = "Nova DSL Formatter"
+  override fun getName(): String = "Nova Formatter"
 
-  private fun formatRanges(source: String, ranges: List<TextRange>): String {
+  private fun formatRanges(source: String, ranges: List<TextRange>, formatter: (String) -> String): String {
     if (ranges.isEmpty() || ranges.any { it.startOffset == 0 && it.endOffset == source.length }) {
-      return NovaDocumentFormatter.format(source)
+      return formatter(source)
     }
 
     val result = StringBuilder(source.length)
@@ -47,10 +51,21 @@ class NovaFormattingService : AsyncDocumentFormattingService() {
       if (start < cursor) continue
 
       result.append(source, cursor, start)
-      result.append(NovaDocumentFormatter.format(source.substring(start, end)))
+      result.append(formatter(source.substring(start, end)))
       cursor = end
     }
     result.append(source, cursor, source.length)
     return result.toString()
+  }
+
+  private fun formatterFor(file: PsiFile): (String) -> String {
+    return when (file.fileType) {
+      NovaCssFileType.INSTANCE -> NovaCssDocumentFormatter::format
+      else -> NovaDocumentFormatter::format
+    }
+  }
+
+  private companion object {
+    private val SUPPORTED_FILE_TYPES = setOf(NovaFileType.INSTANCE, NovaCssFileType.INSTANCE)
   }
 }

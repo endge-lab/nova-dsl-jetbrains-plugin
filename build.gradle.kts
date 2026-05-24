@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.engine2d"
-version = "0.5.10"
+version = "0.5.11"
 
 kotlin {
   jvmToolchain(21)
@@ -61,6 +61,7 @@ intellijPlatform {
         <li>Added CSS-like NovaCSS highlighting and fixed Nova tag folding through a parser definition.</li>
         <li>Improved Nova folding placeholders and added Nova/NovaCSS comment actions.</li>
         <li>Added NovaCSS block folding with selector placeholders and self-managed line comments.</li>
+        <li>Enabled Reformat Code for Nova DSL and NovaCSS files, including CSS-like NovaCSS block formatting.</li>
       </ul>
     """.trimIndent()
 
