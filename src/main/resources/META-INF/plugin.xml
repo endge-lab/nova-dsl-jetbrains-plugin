@@ -36,6 +36,7 @@
       <li>Improved Nova syntax highlighting for script blocks and bound attribute expressions.</li>
       <li>Added Reformat Code support for wrapping long Nova DSL tags across multiple lines.</li>
       <li>Added CSS-like NovaCSS highlighting and fixed Nova tag folding through a parser definition.</li>
+      <li>Improved Nova folding placeholders and added Nova/NovaCSS comment actions.</li>
     </ul>
   ]]></change-notes>
 
@@ -78,6 +79,9 @@
     <completion.contributor language="Nova" implementationClass="dev.engine2d.nova.NovaCompletionContributor" />
 
     <lang.foldingBuilder language="Nova" implementationClass="dev.engine2d.nova.NovaFoldingBuilder" />
+
+    <lang.commenter language="Nova" implementationClass="dev.engine2d.nova.NovaCommenter" />
+    <lang.commenter language="NovaCSS" implementationClass="dev.engine2d.nova.NovaCssCommenter" />
 
     <formattingService implementation="dev.engine2d.nova.NovaFormattingService" />
 

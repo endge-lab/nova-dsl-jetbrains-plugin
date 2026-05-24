@@ -10,13 +10,13 @@ import com.intellij.openapi.util.TextRange
 class NovaFoldingBuilder : FoldingBuilder, DumbAware {
   override fun buildFoldRegions(node: ASTNode, document: Document): Array<FoldingDescriptor> {
     val text = document.text
-    val ranges = mutableListOf<TextRange>()
-    collectCommentRanges(text, ranges)
-    collectTagRanges(text, ranges)
-    return ranges
-      .filter { document.getLineNumber(it.startOffset) < document.getLineNumber(it.endOffset) }
-      .distinctBy { it.startOffset to it.endOffset }
-      .map { FoldingDescriptor(node, it) }
+    val regions = mutableListOf<NovaFoldRegion>()
+    collectCommentRanges(text, regions)
+    collectTagRanges(text, regions)
+    return regions
+      .filter { document.getLineNumber(it.range.startOffset) < document.getLineNumber(it.range.endOffset) }
+      .distinctBy { it.range.startOffset to it.range.endOffset }
+      .map { FoldingDescriptor(node, it.range, null, it.placeholder) }
       .toTypedArray()
   }
 
@@ -24,19 +24,19 @@ class NovaFoldingBuilder : FoldingBuilder, DumbAware {
 
   override fun isCollapsedByDefault(node: ASTNode): Boolean = false
 
-  private fun collectCommentRanges(text: String, ranges: MutableList<TextRange>) {
+  private fun collectCommentRanges(text: String, regions: MutableList<NovaFoldRegion>) {
     var index = 0
     while (index < text.length) {
       val start = text.indexOf("<!--", index)
       if (start < 0) return
       val end = text.indexOf("-->", start + 4)
       if (end < 0) return
-      ranges += TextRange(start, end + 3)
+      regions += NovaFoldRegion(TextRange(start, end + 3), "<!-- ... -->")
       index = end + 3
     }
   }
 
-  private fun collectTagRanges(text: String, ranges: MutableList<TextRange>) {
+  private fun collectTagRanges(text: String, regions: MutableList<NovaFoldRegion>) {
     val stack = ArrayDeque<TagOpen>()
     var index = 0
 
@@ -77,7 +77,12 @@ class NovaFoldingBuilder : FoldingBuilder, DumbAware {
         val open = popMatching(stack, name)
         if (open != null) {
           val end = tag.end
-          if (end - open.offset > name.length + 5) ranges += TextRange(open.offset, end)
+          if (end - open.offset > name.length + 5) {
+            regions += NovaFoldRegion(
+              range = TextRange(open.offset, end),
+              placeholder = buildTagPlaceholder(text, open.offset, tag.name),
+            )
+          }
         }
       }
 
@@ -123,6 +128,32 @@ class NovaFoldingBuilder : FoldingBuilder, DumbAware {
     return null
   }
 
+  private fun buildTagPlaceholder(text: String, start: Int, tagName: String): String {
+    val token = readTag(text, start) ?: return "<$tagName ...>"
+    val rawOpeningTag = text.substring(start, token.end)
+    val firstLine = rawOpeningTag
+      .lineSequence()
+      .firstOrNull()
+      ?.trim()
+      .orEmpty()
+
+    val normalized = if (rawOpeningTag.contains('\n') || rawOpeningTag.contains('\r')) {
+      when {
+        firstLine.length > tagName.length + 2 -> "$firstLine ..."
+        else -> "<$tagName ...>"
+      }
+    } else {
+      rawOpeningTag.replace(Regex("\\s+"), " ").trim()
+    }
+
+    return normalized.truncatePlaceholder()
+  }
+
+  private fun String.truncatePlaceholder(maxLength: Int = 96): String {
+    if (length <= maxLength) return this
+    return take(maxLength - 4).trimEnd() + " ..."
+  }
+
   private fun popMatching(stack: ArrayDeque<TagOpen>, name: String): TagOpen? {
     while (stack.isNotEmpty()) {
       val open = stack.removeLast()
@@ -141,6 +172,11 @@ class NovaFoldingBuilder : FoldingBuilder, DumbAware {
     val closing: Boolean,
     val selfClosing: Boolean,
     val end: Int,
+  )
+
+  private data class NovaFoldRegion(
+    val range: TextRange,
+    val placeholder: String,
   )
 
   private fun isTagNamePart(value: Char): Boolean {
