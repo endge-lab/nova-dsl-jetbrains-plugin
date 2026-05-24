@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.engine2d"
-version = "0.5.9"
+version = "0.5.10"
 
 kotlin {
   jvmToolchain(21)
@@ -60,6 +60,7 @@ intellijPlatform {
         <li>Added Reformat Code support for wrapping long Nova DSL tags across multiple lines.</li>
         <li>Added CSS-like NovaCSS highlighting and fixed Nova tag folding through a parser definition.</li>
         <li>Improved Nova folding placeholders and added Nova/NovaCSS comment actions.</li>
+        <li>Added NovaCSS block folding with selector placeholders and self-managed line comments.</li>
       </ul>
     """.trimIndent()
 
