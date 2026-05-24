@@ -17,6 +17,8 @@ class NovaSyntaxHighlighter : SyntaxHighlighter {
     NovaTokenTypes.TAG_NAME -> TAG_NAME_KEYS
     NovaTokenTypes.ATTRIBUTE -> ATTRIBUTE_KEYS
     NovaTokenTypes.STRING -> STRING_KEYS
+    NovaTokenTypes.NUMBER -> NUMBER_KEYS
+    NovaTokenTypes.IDENTIFIER -> IDENTIFIER_KEYS
     NovaTokenTypes.KEYWORD -> KEYWORD_KEYS
     NovaTokenTypes.OPERATOR -> OPERATOR_KEYS
     NovaTokenTypes.BRACE -> BRACE_KEYS
@@ -30,6 +32,8 @@ class NovaSyntaxHighlighter : SyntaxHighlighter {
     val TAG_NAME = TextAttributesKey.createTextAttributesKey("NOVA_TAG_NAME", DefaultLanguageHighlighterColors.MARKUP_TAG)
     val ATTRIBUTE = TextAttributesKey.createTextAttributesKey("NOVA_ATTRIBUTE", DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE)
     val STRING = TextAttributesKey.createTextAttributesKey("NOVA_STRING", DefaultLanguageHighlighterColors.STRING)
+    val NUMBER = TextAttributesKey.createTextAttributesKey("NOVA_NUMBER", DefaultLanguageHighlighterColors.NUMBER)
+    val IDENTIFIER = TextAttributesKey.createTextAttributesKey("NOVA_IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER)
     val KEYWORD = TextAttributesKey.createTextAttributesKey("NOVA_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD)
     val OPERATOR = TextAttributesKey.createTextAttributesKey("NOVA_OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN)
     val BRACE = TextAttributesKey.createTextAttributesKey("NOVA_BRACE", DefaultLanguageHighlighterColors.BRACES)
@@ -40,6 +44,8 @@ class NovaSyntaxHighlighter : SyntaxHighlighter {
     private val TAG_NAME_KEYS = arrayOf(TAG_NAME)
     private val ATTRIBUTE_KEYS = arrayOf(ATTRIBUTE)
     private val STRING_KEYS = arrayOf(STRING)
+    private val NUMBER_KEYS = arrayOf(NUMBER)
+    private val IDENTIFIER_KEYS = arrayOf(IDENTIFIER)
     private val KEYWORD_KEYS = arrayOf(KEYWORD)
     private val OPERATOR_KEYS = arrayOf(OPERATOR)
     private val BRACE_KEYS = arrayOf(BRACE)

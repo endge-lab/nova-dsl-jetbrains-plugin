@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.engine2d"
-version = "0.5.5"
+version = "0.5.6"
 
 kotlin {
   jvmToolchain(21)
@@ -56,6 +56,7 @@ intellijPlatform {
         <li>Rendered component details as compact formatted HTML and normalized manifest fallback descriptions to Russian.</li>
         <li>Fixed startup file association threading and removed unsupported plugin descriptor URL element.</li>
         <li>Removed deprecated project root API usages reported by JetBrains Plugin Verifier.</li>
+        <li>Improved Nova syntax highlighting for script blocks and bound attribute expressions.</li>
       </ul>
     """.trimIndent()
 

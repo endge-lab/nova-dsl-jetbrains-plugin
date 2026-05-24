@@ -18,11 +18,12 @@ class NovaColorSettingsPage : ColorSettingsPage {
 
     const activeTheme = Nova.signal('light')
     const props = defineProps()
+    const viewWidth = Nova.computed(() => props.width - 24)
     </script>
 
     <template>
-      <Root :width="props.width" :height="props.height">
-        <TextBlock text="Nova DSL" color="#2563eb" />
+      <Root :width="viewWidth.value" :height="props.height">
+        <TextBlock :text="activeTheme.value" color="#2563eb" @click="activeTheme.value = 'dark'" />
       </Root>
     </template>
 
@@ -48,6 +49,8 @@ class NovaColorSettingsPage : ColorSettingsPage {
       AttributesDescriptor("Tag name", NovaSyntaxHighlighter.TAG_NAME),
       AttributesDescriptor("Attribute", NovaSyntaxHighlighter.ATTRIBUTE),
       AttributesDescriptor("String", NovaSyntaxHighlighter.STRING),
+      AttributesDescriptor("Number", NovaSyntaxHighlighter.NUMBER),
+      AttributesDescriptor("Identifier", NovaSyntaxHighlighter.IDENTIFIER),
       AttributesDescriptor("Keyword", NovaSyntaxHighlighter.KEYWORD),
       AttributesDescriptor("Operator", NovaSyntaxHighlighter.OPERATOR),
       AttributesDescriptor("Brace", NovaSyntaxHighlighter.BRACE),
