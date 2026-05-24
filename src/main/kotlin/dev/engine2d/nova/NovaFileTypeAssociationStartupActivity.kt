@@ -1,5 +1,6 @@
 package dev.engine2d.nova
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileTypes.ExtensionFileNameMatcher
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.ex.FileTypeManagerEx
@@ -9,10 +10,14 @@ import com.intellij.openapi.startup.StartupActivity
 
 class NovaFileTypeAssociationStartupActivity : StartupActivity, DumbAware {
   override fun runActivity(project: Project) {
-    val manager = FileTypeManagerEx.getInstanceEx()
-    manager.makeFileTypesChange("Register Nova file type associations") {
-      ensureExtensionOwner(manager, "nova", NovaFileType.INSTANCE)
-      ensureExtensionOwner(manager, "novacss", NovaCssFileType.INSTANCE)
+    ApplicationManager.getApplication().invokeLater {
+      ApplicationManager.getApplication().runWriteAction {
+        val manager = FileTypeManagerEx.getInstanceEx()
+        manager.makeFileTypesChange("Register Nova file type associations") {
+          ensureExtensionOwner(manager, "nova", NovaFileType.INSTANCE)
+          ensureExtensionOwner(manager, "novacss", NovaCssFileType.INSTANCE)
+        }
+      }
     }
   }
 

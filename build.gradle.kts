@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.engine2d"
-version = "0.5.3"
+version = "0.5.4"
 
 kotlin {
   jvmToolchain(21)
@@ -54,6 +54,7 @@ intellijPlatform {
         <li>Cached component manifests and replaced recursive project scanning with bounded package lookup to avoid UI freezes.</li>
         <li>Changed Nova Components panel to an expandable component/prop tree with snippet insertion and drag-and-drop into editors.</li>
         <li>Rendered component details as compact formatted HTML and normalized manifest fallback descriptions to Russian.</li>
+        <li>Fixed startup file association threading and removed unsupported plugin descriptor URL element.</li>
       </ul>
     """.trimIndent()
 

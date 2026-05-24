@@ -2,7 +2,6 @@
   <id>dev.engine2d.nova.dsl</id>
   <name>Nova DSL</name>
   <vendor email="team@engine2d.dev" url="https://engine2d.dev">Engine2D</vendor>
-  <url>https://engine2d.dev</url>
 
   <description><![CDATA[
     <p>
@@ -32,6 +31,7 @@
       <li>Cached component manifests and replaced recursive project scanning with bounded package lookup to avoid UI freezes.</li>
       <li>Changed Nova Components panel to an expandable component/prop tree with snippet insertion and drag-and-drop into editors.</li>
       <li>Rendered component details as compact formatted HTML and normalized manifest fallback descriptions to Russian.</li>
+      <li>Fixed startup file association threading and removed unsupported plugin descriptor URL element.</li>
     </ul>
   ]]></change-notes>
 
