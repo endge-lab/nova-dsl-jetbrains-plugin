@@ -14,10 +14,10 @@ import java.awt.Dimension
 import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.Transferable
 import javax.swing.JButton
+import javax.swing.JEditorPane
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JSplitPane
-import javax.swing.JTextArea
 import javax.swing.JTree
 import javax.swing.TransferHandler
 import javax.swing.event.DocumentEvent
@@ -44,7 +44,7 @@ private class NovaComponentsPanel(
   private val treeModel = DefaultTreeModel(rootNode)
   private val tree = JTree(treeModel)
   private val search = JBTextField()
-  private val details = JTextArea()
+  private val details = JEditorPane("text/html", "")
   private val insertButton = JButton("Insert snippet")
   private val sourceButton = JButton("Open source")
 
@@ -64,8 +64,7 @@ private class NovaComponentsPanel(
     }
 
     details.isEditable = false
-    details.lineWrap = true
-    details.wrapStyleWord = true
+    details.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true)
 
     val left = JPanel(BorderLayout())
     left.add(search, BorderLayout.NORTH)
@@ -142,47 +141,40 @@ private class NovaComponentsPanel(
       is NovaComponentDoc -> renderComponentDetails(value)
       is NovaComponentPropNode -> renderPropDetails(value)
       is NovaComponentGroupNode -> {
-        details.text = value.title
-        details.caretPosition = 0
+        setDetailsHtml("<h3>${escapeHtml(value.title)}</h3>")
       }
       else -> {
-        details.text = ""
+        setDetailsHtml("")
       }
     }
   }
 
   private fun renderComponentDetails(component: NovaComponentDoc) {
-    val props = component.props.joinToString("\n") { prop ->
-      val required = if (prop.required) " required" else ""
-      "- ${prop.name}: ${shortDescription(prop.description)}$required"
+    val props = component.props.joinToString("") { prop ->
+      val required = if (prop.required) " <strong class=\"required\">required</strong>" else ""
+      "<li><code>${escapeHtml(prop.name)}</code>: ${escapeHtml(shortDescription(prop.description))}$required</li>"
     }
-    details.text = """
-      ${component.name}
-      ${component.groupTitle}
-
-      ${component.description}
-
-      Props
-      ${props.ifBlank { "Нет props." }}
-
-      Drag the component or selected props into the editor.
-    """.trimIndent()
-    details.caretPosition = 0
+    setDetailsHtml("""
+      <h3>${escapeHtml(component.name)}</h3>
+      <div class="meta">${escapeHtml(component.groupTitle)}</div>
+      <p>${escapeHtml(component.description)}</p>
+      <h4>Props</h4>
+      ${if (props.isBlank()) "<p class=\"muted\">Нет props.</p>" else "<ul>$props</ul>"}
+      <p class="hint">Перетащите компонент или выбранные props в редактор.</p>
+    """.trimIndent())
   }
 
   private fun renderPropDetails(node: NovaComponentPropNode) {
     val required = if (node.prop.required) "Да" else "Нет"
-    details.text = """
-      ${node.component.name}.${node.prop.name}
-
-      ${node.prop.description}
-
-      Type: ${node.prop.type}
-      Required: $required
-
-      Drag this prop to insert ${node.component.name} with selected props.
-    """.trimIndent()
-    details.caretPosition = 0
+    setDetailsHtml("""
+      <h3>${escapeHtml(node.component.name)}.<code>${escapeHtml(node.prop.name)}</code></h3>
+      <p>${escapeHtml(node.prop.description)}</p>
+      <dl>
+        <dt>Тип</dt><dd><code>${escapeHtml(node.prop.type)}</code></dd>
+        <dt>Обязательный</dt><dd>$required</dd>
+      </dl>
+      <p class="hint">Перетащите prop, чтобы вставить ${escapeHtml(node.component.name)} с выбранными props.</p>
+    """.trimIndent())
   }
 
   private fun insertSelectedSnippet() {
@@ -287,6 +279,73 @@ private class NovaComponentsPanel(
 
   private fun shortDescription(description: String): String {
     return description.substringBefore(".").substringBefore("\n").trim().ifBlank { description }
+  }
+
+  private fun setDetailsHtml(body: String) {
+    details.text = """
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+              font-size: 11px;
+              line-height: 1.35;
+              margin: 8px;
+            }
+            h3 {
+              font-size: 13px;
+              margin: 0 0 2px 0;
+            }
+            h4 {
+              font-size: 11px;
+              margin: 10px 0 4px 0;
+              text-transform: uppercase;
+              letter-spacing: .04em;
+            }
+            p {
+              margin: 6px 0;
+            }
+            ul {
+              margin: 4px 0 0 14px;
+              padding: 0;
+            }
+            li {
+              margin: 2px 0;
+            }
+            code {
+              font-family: JetBrains Mono, Menlo, monospace;
+              font-size: 10px;
+            }
+            dl {
+              margin: 6px 0;
+            }
+            dt {
+              font-weight: 700;
+              margin-top: 4px;
+            }
+            dd {
+              margin-left: 0;
+            }
+            .meta, .muted, .hint {
+              color: #6b7280;
+            }
+            .required {
+              color: #b45309;
+            }
+          </style>
+        </head>
+        <body>$body</body>
+      </html>
+    """.trimIndent()
+    details.caretPosition = 0
+  }
+
+  private fun escapeHtml(value: String): String {
+    return value
+      .replace("&", "&amp;")
+      .replace("<", "&lt;")
+      .replace(">", "&gt;")
+      .replace("\"", "&quot;")
   }
 }
 

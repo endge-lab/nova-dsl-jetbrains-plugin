@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.engine2d"
-version = "0.5.2"
+version = "0.5.3"
 
 kotlin {
   jvmToolchain(21)
@@ -53,6 +53,7 @@ intellijPlatform {
         <li>Added Nova component registry panel, manifest-backed completions and Nova folding support.</li>
         <li>Cached component manifests and replaced recursive project scanning with bounded package lookup to avoid UI freezes.</li>
         <li>Changed Nova Components panel to an expandable component/prop tree with snippet insertion and drag-and-drop into editors.</li>
+        <li>Rendered component details as compact formatted HTML and normalized manifest fallback descriptions to Russian.</li>
       </ul>
     """.trimIndent()
 
