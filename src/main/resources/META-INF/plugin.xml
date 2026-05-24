@@ -39,6 +39,7 @@
       <li>Improved Nova folding placeholders and added Nova/NovaCSS comment actions.</li>
       <li>Added NovaCSS block folding with selector placeholders and self-managed line comments.</li>
       <li>Enabled Reformat Code for Nova DSL and NovaCSS files, including CSS-like NovaCSS block formatting.</li>
+      <li>Highlighted short Nova directive values such as <code>for</code>, <code>if</code>, <code>show</code> and <code>model</code> as TypeScript-like expressions.</li>
     </ul>
   ]]></change-notes>
 

@@ -407,6 +407,14 @@ class NovaLexer : LexerBase() {
     )
 
     private val DIRECTIVE_ATTRIBUTES = setOf(
+      "for",
+      "if",
+      "else-if",
+      "show",
+      "bind",
+      "on",
+      "slot",
+      "model",
       "v-if",
       "v-else-if",
       "v-for",
