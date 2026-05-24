@@ -4,6 +4,7 @@ import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandler
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
@@ -87,7 +88,7 @@ class NovaGotoDeclarationHandler : GotoDeclarationHandler {
     tagName: String,
   ): PsiElement? {
     val source = NovaComponentRegistry.find(project, tagName)?.source ?: return null
-    val workspaceRoot = findWorkspaceRoot(sourceFile) ?: project.baseDir ?: return null
+    val workspaceRoot = findWorkspaceRoot(sourceFile) ?: findProjectRoot(project) ?: return null
     val targetFile = workspaceRoot.findFileByRelativePath(source) ?: return null
     return PsiManager.getInstance(project).findFile(targetFile)
   }
@@ -106,6 +107,11 @@ class NovaGotoDeclarationHandler : GotoDeclarationHandler {
   private fun findWorkspaceRoot(sourceFile: VirtualFile): VirtualFile? {
     return generateSequence(if (sourceFile.isDirectory) sourceFile else sourceFile.parent) { it.parent }
       .firstOrNull { it.findChild("packages") != null && it.findChild("package.json") != null }
+  }
+
+  private fun findProjectRoot(project: Project): VirtualFile? {
+    val basePath = project.basePath ?: return null
+    return LocalFileSystem.getInstance().findFileByPath(basePath)
   }
 
   private fun findQuotedStringAt(text: String, offset: Int): TextSpan? {

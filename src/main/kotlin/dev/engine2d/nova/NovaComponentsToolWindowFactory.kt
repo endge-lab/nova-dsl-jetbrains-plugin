@@ -3,6 +3,7 @@ package dev.engine2d.nova
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
@@ -188,7 +189,8 @@ private class NovaComponentsPanel(
   private fun openSelectedSource() {
     val component = selectedComponent() ?: return
     val source = component.source ?: return
-    val base = project.baseDir ?: return
+    val basePath = project.basePath ?: return
+    val base = LocalFileSystem.getInstance().findFileByPath(basePath) ?: return
     val file = VfsUtil.findRelativeFile(source, base) ?: return
     FileEditorManager.getInstance(project).openFile(file, true)
   }

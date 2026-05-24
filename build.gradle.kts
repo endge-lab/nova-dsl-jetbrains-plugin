@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.engine2d"
-version = "0.5.4"
+version = "0.5.5"
 
 kotlin {
   jvmToolchain(21)
@@ -55,6 +55,7 @@ intellijPlatform {
         <li>Changed Nova Components panel to an expandable component/prop tree with snippet insertion and drag-and-drop into editors.</li>
         <li>Rendered component details as compact formatted HTML and normalized manifest fallback descriptions to Russian.</li>
         <li>Fixed startup file association threading and removed unsupported plugin descriptor URL element.</li>
+        <li>Removed deprecated project root API usages reported by JetBrains Plugin Verifier.</li>
       </ul>
     """.trimIndent()
 

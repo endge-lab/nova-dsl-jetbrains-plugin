@@ -3,6 +3,7 @@ package dev.engine2d.nova
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import java.io.InputStreamReader
@@ -53,7 +54,8 @@ object NovaComponentRegistry {
   }
 
   private fun currentProjectManifests(project: Project): List<NovaComponentDoc> {
-    val base = project.baseDir ?: return emptyList()
+    val basePath = project.basePath ?: return emptyList()
+    val base = LocalFileSystem.getInstance().findFileByPath(basePath) ?: return emptyList()
     return projectCache.getOrPut(base.path) { loadProjectManifests(base) }
   }
 
