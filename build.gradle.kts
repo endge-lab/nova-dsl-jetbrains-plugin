@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.engine2d"
-version = "0.5.7"
+version = "0.5.8"
 
 kotlin {
   jvmToolchain(21)
@@ -58,6 +58,7 @@ intellijPlatform {
         <li>Removed deprecated project root API usages reported by JetBrains Plugin Verifier.</li>
         <li>Improved Nova syntax highlighting for script blocks and bound attribute expressions.</li>
         <li>Added Reformat Code support for wrapping long Nova DSL tags across multiple lines.</li>
+        <li>Added CSS-like NovaCSS highlighting and fixed Nova tag folding through a parser definition.</li>
       </ul>
     """.trimIndent()
 

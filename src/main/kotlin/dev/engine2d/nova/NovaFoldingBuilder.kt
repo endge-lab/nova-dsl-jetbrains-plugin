@@ -38,25 +38,89 @@ class NovaFoldingBuilder : FoldingBuilder, DumbAware {
 
   private fun collectTagRanges(text: String, ranges: MutableList<TextRange>) {
     val stack = ArrayDeque<TagOpen>()
-    val pattern = Regex("""<\s*(/)?\s*([A-Za-z_$][\w$.-]*)([^>]*)>""")
-    for (match in pattern.findAll(text)) {
-      val full = match.value
-      if (full.startsWith("<!--") || full.startsWith("<!")) continue
-      val closing = match.groupValues[1].isNotEmpty()
-      val name = match.groupValues[2]
-      val selfClosing = full.endsWith("/>") || name == "StripePattern"
+    var index = 0
 
-      if (!closing && !selfClosing) {
-        stack.addLast(TagOpen(name, match.range.first))
+    while (index < text.length) {
+      val start = text.indexOf('<', index)
+      if (start < 0) return
+
+      if (text.startsWith("<!--", start)) {
+        index = text.indexOf("-->", start + 4).let { if (it < 0) text.length else it + 3 }
         continue
       }
 
-      if (closing) {
-        val open = popMatching(stack, name) ?: continue
-        val end = match.range.last + 1
-        if (end - open.offset > name.length + 5) ranges += TextRange(open.offset, end)
+      if (start + 1 >= text.length || text[start + 1] == '!' || text[start + 1] == '?') {
+        index = start + 1
+        continue
       }
+
+      val tag = readTag(text, start)
+      if (tag == null) {
+        index = start + 1
+        continue
+      }
+
+      val closing = tag.closing
+      val name = tag.name
+      val selfClosing = tag.selfClosing || name == "StripePattern"
+
+      if (!closing && !selfClosing) {
+        stack.addLast(TagOpen(name, start))
+
+        if (name == "script" || name == "style") {
+          index = tag.end
+          continue
+        }
+      }
+
+      if (closing) {
+        val open = popMatching(stack, name)
+        if (open != null) {
+          val end = tag.end
+          if (end - open.offset > name.length + 5) ranges += TextRange(open.offset, end)
+        }
+      }
+
+      index = tag.end
     }
+  }
+
+  private fun readTag(text: String, start: Int): TagToken? {
+    var index = start + 1
+    var closing = false
+    if (index < text.length && text[index] == '/') {
+      closing = true
+      index += 1
+    }
+
+    while (index < text.length && text[index].isWhitespace()) index += 1
+    val nameStart = index
+    while (index < text.length && isTagNamePart(text[index])) index += 1
+    if (index == nameStart) return null
+    val name = text.substring(nameStart, index)
+
+    var quote = 0.toChar()
+    var escaped = false
+    while (index < text.length) {
+      val current = text[index]
+      if (quote != 0.toChar()) {
+        if (escaped) {
+          escaped = false
+        } else if (current == '\\') {
+          escaped = true
+        } else if (current == quote) {
+          quote = 0.toChar()
+        }
+      } else if (current == '"' || current == '\'' || current == '`') {
+        quote = current
+      } else if (current == '>') {
+        val selfClosing = index > start && text.substring(start, index).trimEnd().endsWith("/")
+        return TagToken(name = name, closing = closing, selfClosing = selfClosing, end = index + 1)
+      }
+      index += 1
+    }
+
+    return null
   }
 
   private fun popMatching(stack: ArrayDeque<TagOpen>, name: String): TagOpen? {
@@ -71,4 +135,15 @@ class NovaFoldingBuilder : FoldingBuilder, DumbAware {
     val name: String,
     val offset: Int,
   )
+
+  private data class TagToken(
+    val name: String,
+    val closing: Boolean,
+    val selfClosing: Boolean,
+    val end: Int,
+  )
+
+  private fun isTagNamePart(value: Char): Boolean {
+    return value.isLetterOrDigit() || value == '_' || value == '$' || value == '-' || value == '.'
+  }
 }

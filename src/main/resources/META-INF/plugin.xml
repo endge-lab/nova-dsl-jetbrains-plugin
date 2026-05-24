@@ -35,6 +35,7 @@
       <li>Removed deprecated project root API usages reported by JetBrains Plugin Verifier.</li>
       <li>Improved Nova syntax highlighting for script blocks and bound attribute expressions.</li>
       <li>Added Reformat Code support for wrapping long Nova DSL tags across multiple lines.</li>
+      <li>Added CSS-like NovaCSS highlighting and fixed Nova tag folding through a parser definition.</li>
     </ul>
   ]]></change-notes>
 
@@ -63,7 +64,12 @@
       language="NovaCSS"
       implementationClass="dev.engine2d.nova.NovaCssSyntaxHighlighterFactory" />
 
+    <lang.parserDefinition
+      language="Nova"
+      implementationClass="dev.engine2d.nova.NovaParserDefinition" />
+
     <colorSettingsPage implementation="dev.engine2d.nova.NovaColorSettingsPage" />
+    <colorSettingsPage implementation="dev.engine2d.nova.NovaCssColorSettingsPage" />
 
     <postStartupActivity implementation="dev.engine2d.nova.NovaFileTypeAssociationStartupActivity" />
 
