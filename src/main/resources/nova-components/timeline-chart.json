@@ -1,0 +1,511 @@
+{
+  "packageName": "@engine2d/timeline-chart",
+  "version": "2.16.0",
+  "groups": [
+    {
+      "id": "timeline-chart",
+      "title": "TimelineChart",
+      "components": [
+        {
+          "name": "TimelineChart.GroupPanel",
+          "title": "TimelineChart.GroupPanel",
+          "description": {
+            "ru": "Декларация панели групп TimelineChart.",
+            "en": "TimelineChart group panel declaration marker for registering compiled group column schema factories."
+          },
+          "source": "packages/timeline-chart/src/features/timeline/vue/timeline-dsl.ts",
+          "snippet": "<TimelineChart.GroupPanel>\n  $END$\n</TimelineChart.GroupPanel>",
+          "props": [],
+          "slots": []
+        },
+        {
+          "name": "TimelineChart.GroupColumn",
+          "title": "TimelineChart.GroupColumn",
+          "description": {
+            "ru": "Декларация шаблона колонки групп.",
+            "en": "TimelineChart group column declaration marker. Slots #cell and #header compile to NovaSchema factories."
+          },
+          "source": "packages/timeline-chart/src/features/timeline/vue/timeline-dsl.ts",
+          "snippet": "<TimelineChart.GroupColumn id=\"$id$\">\n  $END$\n</TimelineChart.GroupColumn>",
+          "props": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": {
+                "ru": "Стабильный идентификатор компонента.",
+                "en": "Static group column id from options.groups.columns."
+              }
+            }
+          ],
+          "slots": [
+            {
+              "name": "cell",
+              "description": {
+                "ru": "Group cell schema slot with group, column, data, x, y, width, height, treeDisclosureColumn and treeIndent.",
+                "en": "Group cell schema slot with group, column, data, x, y, width, height, treeDisclosureColumn and treeIndent."
+              }
+            },
+            {
+              "name": "header",
+              "description": {
+                "ru": "Group column header schema slot with column, x, y, width and height.",
+                "en": "Group column header schema slot with column, x, y, width and height."
+              }
+            }
+          ]
+        },
+        {
+          "name": "TimelineTaskProfile",
+          "title": "TimelineTaskProfile",
+          "description": {
+            "ru": "Шаблон отрисовки задачи TimelineChart.",
+            "en": "TimelineChart task profile DSL marker. Its default slot contains compiled Rect, Text or TextBlock profile primitives."
+          },
+          "source": "packages/timeline-chart/src/features/timeline/vue/timeline-dsl.ts",
+          "snippet": "<TimelineTaskProfile name=\"$name$\">\n  $END$\n</TimelineTaskProfile>",
+          "props": [
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": {
+                "ru": "Имя шаблона или слота.",
+                "en": "Static task profile id."
+              }
+            },
+            {
+              "name": "contract",
+              "type": "TimelineTaskProfileContract | Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Optional render planner contract for compiled task profile batching.",
+                "en": "Optional render planner contract for compiled task profile batching."
+              }
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "description": {
+                "ru": "Task card template scope with task, width, height, selected and runtime geometry fields.",
+                "en": "Task card template scope with task, width, height, selected and runtime geometry fields."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rect",
+          "title": "Rect",
+          "description": {
+            "ru": "Прямоугольник schema-шаблона.",
+            "en": "Timeline task profile rectangle primitive used inside TimelineTaskProfile templates and external .nova fragments."
+          },
+          "source": "packages/timeline-chart/src/features/timeline/vue/timeline-dsl.ts",
+          "snippet": "<Rect>\n  $END$\n</Rect>",
+          "props": [
+            {
+              "name": "x",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Координата X.",
+                "en": "x prop."
+              }
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Координата Y.",
+                "en": "y prop."
+              }
+            },
+            {
+              "name": "width",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Ширина компонента.",
+                "en": "width prop."
+              }
+            },
+            {
+              "name": "height",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Высота компонента.",
+                "en": "height prop."
+              }
+            },
+            {
+              "name": "background",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Фон компонента.",
+                "en": "background prop."
+              }
+            },
+            {
+              "name": "border",
+              "type": "Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Описание обводки.",
+                "en": "border prop."
+              }
+            },
+            {
+              "name": "opacity",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Prop opacity компонента Rect.",
+                "en": "opacity prop."
+              }
+            },
+            {
+              "name": "active",
+              "type": "boolean",
+              "required": false,
+              "description": {
+                "ru": "Prop active компонента Rect.",
+                "en": "active prop."
+              }
+            },
+            {
+              "name": "clip",
+              "type": "boolean",
+              "required": false,
+              "description": {
+                "ru": "Prop clip компонента Rect.",
+                "en": "clip prop."
+              }
+            },
+            {
+              "name": "meta",
+              "type": "Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Prop meta компонента Rect.",
+                "en": "meta prop."
+              }
+            }
+          ],
+          "slots": []
+        },
+        {
+          "name": "Line",
+          "title": "Line",
+          "description": {
+            "ru": "Линия schema-шаблона.",
+            "en": "Timeline schema line primitive for compiled group column DSL."
+          },
+          "source": "packages/timeline-chart/src/features/timeline/vue/timeline-dsl.ts",
+          "snippet": "<Line>\n  $END$\n</Line>",
+          "props": [],
+          "slots": []
+        },
+        {
+          "name": "Circle",
+          "title": "Circle",
+          "description": {
+            "ru": "Окружность schema-шаблона.",
+            "en": "Timeline schema circle primitive for compiled group column DSL."
+          },
+          "source": "packages/timeline-chart/src/features/timeline/vue/timeline-dsl.ts",
+          "snippet": "<Circle>\n  $END$\n</Circle>",
+          "props": [],
+          "slots": []
+        },
+        {
+          "name": "Icon",
+          "title": "Icon",
+          "description": {
+            "ru": "Иконка в schema-шаблоне.",
+            "en": "Timeline schema icon primitive for compiled group column DSL."
+          },
+          "source": "packages/timeline-chart/src/features/timeline/vue/timeline-dsl.ts",
+          "snippet": "<Icon>\n  $END$\n</Icon>",
+          "props": [],
+          "slots": []
+        },
+        {
+          "name": "ProgressRing",
+          "title": "ProgressRing",
+          "description": {
+            "ru": "Кольцевой индикатор прогресса.",
+            "en": "Timeline schema progress ring helper for compiled group column DSL."
+          },
+          "source": "packages/timeline-chart/src/features/timeline/vue/timeline-dsl.ts",
+          "snippet": "<ProgressRing>\n  $END$\n</ProgressRing>",
+          "props": [],
+          "slots": []
+        },
+        {
+          "name": "Text",
+          "title": "Text",
+          "description": {
+            "ru": "Timeline task profile text primitive used inside TimelineTaskProfile templates and external .nova fragments.",
+            "en": "Timeline task profile text primitive used inside TimelineTaskProfile templates and external .nova fragments."
+          },
+          "source": "packages/timeline-chart/src/features/timeline/vue/timeline-dsl.ts",
+          "snippet": "<Text>\n  $END$\n</Text>",
+          "props": [
+            {
+              "name": "x",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Координата X.",
+                "en": "x prop."
+              }
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Координата Y.",
+                "en": "y prop."
+              }
+            },
+            {
+              "name": "width",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Ширина компонента.",
+                "en": "width prop."
+              }
+            },
+            {
+              "name": "height",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Высота компонента.",
+                "en": "height prop."
+              }
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Текст для отображения.",
+                "en": "text prop."
+              }
+            },
+            {
+              "name": "color",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Цвет текста или элемента.",
+                "en": "color prop."
+              }
+            },
+            {
+              "name": "font",
+              "type": "Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Prop font компонента Text.",
+                "en": "font prop."
+              }
+            },
+            {
+              "name": "lineHeight",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Prop lineHeight компонента Text.",
+                "en": "lineHeight prop."
+              }
+            },
+            {
+              "name": "padding",
+              "type": "number | Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Prop padding компонента Text.",
+                "en": "padding prop."
+              }
+            },
+            {
+              "name": "align",
+              "type": "Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Prop align компонента Text.",
+                "en": "align prop."
+              }
+            },
+            {
+              "name": "ellipsis",
+              "type": "boolean",
+              "required": false,
+              "description": {
+                "ru": "Prop ellipsis компонента Text.",
+                "en": "ellipsis prop."
+              }
+            },
+            {
+              "name": "opacity",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Prop opacity компонента Text.",
+                "en": "opacity prop."
+              }
+            },
+            {
+              "name": "meta",
+              "type": "Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Prop meta компонента Text.",
+                "en": "meta prop."
+              }
+            }
+          ],
+          "slots": []
+        },
+        {
+          "name": "TextBlock",
+          "title": "TextBlock",
+          "description": {
+            "ru": "Текстовый блок canvas UI.",
+            "en": "Timeline task profile text block primitive used inside TimelineTaskProfile templates and external .nova fragments."
+          },
+          "source": "packages/timeline-chart/src/features/timeline/vue/timeline-dsl.ts",
+          "snippet": "<TextBlock>\n  $END$\n</TextBlock>",
+          "props": [
+            {
+              "name": "x",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Координата X.",
+                "en": "x prop."
+              }
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Координата Y.",
+                "en": "y prop."
+              }
+            },
+            {
+              "name": "width",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Ширина компонента.",
+                "en": "width prop."
+              }
+            },
+            {
+              "name": "height",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Высота компонента.",
+                "en": "height prop."
+              }
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Текст для отображения.",
+                "en": "text prop."
+              }
+            },
+            {
+              "name": "color",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Цвет текста или элемента.",
+                "en": "color prop."
+              }
+            },
+            {
+              "name": "font",
+              "type": "Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Prop font компонента TextBlock.",
+                "en": "font prop."
+              }
+            },
+            {
+              "name": "lineHeight",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Prop lineHeight компонента TextBlock.",
+                "en": "lineHeight prop."
+              }
+            },
+            {
+              "name": "padding",
+              "type": "number | Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Prop padding компонента TextBlock.",
+                "en": "padding prop."
+              }
+            },
+            {
+              "name": "align",
+              "type": "Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Prop align компонента TextBlock.",
+                "en": "align prop."
+              }
+            },
+            {
+              "name": "ellipsis",
+              "type": "boolean",
+              "required": false,
+              "description": {
+                "ru": "Prop ellipsis компонента TextBlock.",
+                "en": "ellipsis prop."
+              }
+            },
+            {
+              "name": "opacity",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Prop opacity компонента TextBlock.",
+                "en": "opacity prop."
+              }
+            },
+            {
+              "name": "meta",
+              "type": "Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Prop meta компонента TextBlock.",
+                "en": "meta prop."
+              }
+            }
+          ],
+          "slots": []
+        }
+      ]
+    }
+  ]
+}

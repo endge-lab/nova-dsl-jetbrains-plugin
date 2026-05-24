@@ -1,0 +1,24 @@
+<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="novaHeartLeftDark" x1="5.5" y1="7.5" x2="22" y2="33.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A855F7"/>
+      <stop offset="0.55" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#4C1D95"/>
+    </linearGradient>
+    <linearGradient id="novaHeartRightDark" x1="34.5" y1="7.5" x2="18" y2="33.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8B5CF6"/>
+      <stop offset="0.55" stop-color="#6D28D9"/>
+      <stop offset="1" stop-color="#3B0764"/>
+    </linearGradient>
+    <linearGradient id="novaHeartCenterDark" x1="20" y1="11" x2="20" y2="33.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#581C87"/>
+    </linearGradient>
+  </defs>
+  <path d="M5.5 10.3 10.2 5.8h7.8L20 7.9l-7.5 7.5L5.5 10.3Z" fill="#A78BFA"/>
+  <path d="M34.5 10.3 29.8 5.8H22L20 7.9l7.5 7.5 7-5.1Z" fill="#8B5CF6"/>
+  <path d="M5.5 10.3v8.6L20 33.8V22.1L5.5 10.3Z" fill="url(#novaHeartLeftDark)"/>
+  <path d="M34.5 10.3v8.6L20 33.8V22.1l14.5-11.8Z" fill="url(#novaHeartRightDark)"/>
+  <path d="M12.5 15.4 20 7.9l7.5 7.5L20 22.1l-7.5-6.7Z" fill="url(#novaHeartCenterDark)" opacity="0.94"/>
+  <path d="M5.5 10.3 10.2 5.8h7.8L20 7.9l2-2.1h7.8l4.7 4.5v8.6L20 33.8 5.5 18.9v-8.6Z" fill="none" stroke="#C4B5FD" stroke-width="0.75" opacity="0.4"/>
+</svg>

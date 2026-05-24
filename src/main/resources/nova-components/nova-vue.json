@@ -1,0 +1,267 @@
+{
+  "packageName": "@endge/nova-vue",
+  "version": "0.3.0",
+  "groups": [
+    {
+      "id": "nova-vue",
+      "title": "Nova Vue",
+      "components": [
+        {
+          "name": "NovaCanvas",
+          "title": "NovaCanvas",
+          "description": {
+            "ru": "Vue host component that creates a NovaApp, mounts compiled Nova DSL from its default slot and exposes overlay slots.",
+            "en": "Vue host component that creates a NovaApp, mounts compiled Nova DSL from its default slot and exposes overlay slots."
+          },
+          "source": "packages/@endge-nova-vue/src/components/NovaCanvas.vue",
+          "snippet": "<NovaCanvas>\n  $END$\n</NovaCanvas>",
+          "props": [
+            {
+              "name": "canvas-label",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Accessible canvas label and default DevTools label.",
+                "en": "Accessible canvas label and default DevTools label."
+              }
+            },
+            {
+              "name": "width",
+              "type": "number | string",
+              "required": false,
+              "description": {
+                "ru": "Ширина компонента.",
+                "en": "Canvas stage width. Number values are treated as pixels."
+              }
+            },
+            {
+              "name": "height",
+              "type": "number | string",
+              "required": false,
+              "description": {
+                "ru": "Высота компонента.",
+                "en": "Canvas stage height. Number values are treated as pixels."
+              }
+            },
+            {
+              "name": "mount",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Static path to a `.nova` entrypoint component. The Nova compiler turns it into a mounted `nova-template` marker.",
+                "en": "Static path to a `.nova` entrypoint component. The Nova compiler turns it into a mounted `nova-template` marker."
+              }
+            },
+            {
+              "name": "props",
+              "type": "Record<string, unknown>",
+              "required": false,
+              "description": {
+                "ru": "Plain props bridge forwarded to the mounted `.nova` entrypoint and updated without remounting.",
+                "en": "Plain props bridge forwarded to the mounted `.nova` entrypoint and updated without remounting."
+              }
+            },
+            {
+              "name": "maxDpr",
+              "type": "number",
+              "required": false,
+              "description": {
+                "ru": "Maximum device pixel ratio used by Nova canvas sizing.",
+                "en": "Maximum device pixel ratio used by Nova canvas sizing."
+              }
+            },
+            {
+              "name": "surfaceName",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Name for the root Nova surface created by NovaCanvas.",
+                "en": "Name for the root Nova surface created by NovaCanvas."
+              }
+            },
+            {
+              "name": "plugins",
+              "type": "Array<NovaSchemaPlugin>",
+              "required": false,
+              "description": {
+                "ru": "Schema plugins registered before template mount, for example `registerNovaUIKit`.",
+                "en": "Schema plugins registered before template mount, for example `registerNovaUIKit`."
+              }
+            },
+            {
+              "name": "appOptions",
+              "type": "Partial<Omit<NovaAppCreateOptions, 'target' | 'size'>>",
+              "required": false,
+              "description": {
+                "ru": "Additional NovaApp create options: renderer, scheduler, input, sound, theme and debug.",
+                "en": "Additional NovaApp create options: renderer, scheduler, input, sound, theme and debug."
+              }
+            },
+            {
+              "name": "padding",
+              "type": "unknown",
+              "required": false,
+              "description": {
+                "ru": "Root padding forwarded to the implicit Root wrapper.",
+                "en": "Root padding forwarded to the implicit Root wrapper."
+              }
+            },
+            {
+              "name": "background",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Фон компонента.",
+                "en": "Root background forwarded to the implicit Root wrapper."
+              }
+            },
+            {
+              "name": "border",
+              "type": "unknown",
+              "required": false,
+              "description": {
+                "ru": "Описание обводки.",
+                "en": "Root border forwarded to the implicit Root wrapper."
+              }
+            },
+            {
+              "name": "clip",
+              "type": "boolean",
+              "required": false,
+              "description": {
+                "ru": "Root clip flag forwarded to the implicit Root wrapper.",
+                "en": "Root clip flag forwarded to the implicit Root wrapper."
+              }
+            },
+            {
+              "name": "rootId",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Root component id for the implicit Root wrapper.",
+                "en": "Root component id for the implicit Root wrapper."
+              }
+            },
+            {
+              "name": "rootClassName",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Root className forwarded to the implicit Root wrapper. Responsive tokens such as `hidden md:shown md:box` are valid w...",
+                "en": "Root className forwarded to the implicit Root wrapper. Responsive tokens such as `hidden md:shown md:box` are valid when NovaCSS provides matching utilities/classes."
+              }
+            },
+            {
+              "name": "styleSheet",
+              "type": "unknown",
+              "required": false,
+              "description": {
+                "ru": "NovaCSS stylesheet source or asset forwarded to the implicit Root wrapper.",
+                "en": "NovaCSS stylesheet source or asset forwarded to the implicit Root wrapper."
+              }
+            },
+            {
+              "name": "devtools",
+              "type": "boolean | { id?: string; label?: string }",
+              "required": false,
+              "description": {
+                "ru": "Enable/disable Nova DevTools registration or override DevTools id/label.",
+                "en": "Enable/disable Nova DevTools registration or override DevTools id/label."
+              }
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "description": {
+                "ru": "Inline Nova DSL. The Nova Vite compiler rewrites this slot into `#nova` with a `nova-template` marker.",
+                "en": "Inline Nova DSL. The Nova Vite compiler rewrites this slot into `#nova` with a `nova-template` marker."
+              }
+            },
+            {
+              "name": "nova",
+              "description": {
+                "ru": "Compiled Nova template marker slot generated by the compiler.",
+                "en": "Compiled Nova template marker slot generated by the compiler."
+              }
+            },
+            {
+              "name": "overlay",
+              "description": {
+                "ru": "Regular Vue overlay content rendered above the canvas stage.",
+                "en": "Regular Vue overlay content rendered above the canvas stage."
+              }
+            }
+          ]
+        },
+        {
+          "name": "nova-template",
+          "title": "nova-template",
+          "description": {
+            "ru": "Internal marker consumed by NovaCanvas. Usually generated by the Nova Vite compiler.",
+            "en": "Internal marker consumed by NovaCanvas. Usually generated by the Nova Vite compiler."
+          },
+          "source": "packages/@endge-nova-vue/src/components/NovaCanvas.vue",
+          "snippet": "<nova-template>\n  $END$\n</nova-template>",
+          "props": [
+            {
+              "name": "src",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Путь к внешнему Nova asset.",
+                "en": "Path to a `.nova` source file."
+              }
+            },
+            {
+              "name": "component",
+              "type": "unknown",
+              "required": false,
+              "description": {
+                "ru": "Compiled Nova component constructor.",
+                "en": "Compiled Nova component constructor."
+              }
+            },
+            {
+              "name": "source",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Debug source path.",
+                "en": "Debug source path."
+              }
+            },
+            {
+              "name": "debug-id",
+              "type": "string",
+              "required": false,
+              "description": {
+                "ru": "Debug identifier.",
+                "en": "Debug identifier."
+              }
+            },
+            {
+              "name": "options",
+              "type": "unknown",
+              "required": false,
+              "description": {
+                "ru": "Template options forwarded to the compiled component.",
+                "en": "Template options forwarded to the compiled component."
+              }
+            },
+            {
+              "name": "data",
+              "type": "unknown",
+              "required": false,
+              "description": {
+                "ru": "Template data forwarded to the compiled component.",
+                "en": "Template data forwarded to the compiled component."
+              }
+            }
+          ],
+          "slots": []
+        }
+      ]
+    }
+  ]
+}

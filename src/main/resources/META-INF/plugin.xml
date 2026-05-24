@@ -1,0 +1,98 @@
+<idea-plugin>
+  <id>dev.engine2d.nova.dsl</id>
+  <name>Nova DSL</name>
+  <vendor email="team@engine2d.dev" url="https://engine2d.dev">Engine2D</vendor>
+  <url>https://engine2d.dev</url>
+
+  <description><![CDATA[
+    <p>
+      Nova DSL adds JetBrains IDE support for <code>.nova</code> files used by the Engine2D/Nova canvas runtime.
+    </p>
+    <p>
+      The plugin registers a dedicated Nova file type instead of treating Nova files as ordinary Vue SFC files.
+      It removes Vue false-positive inspections for Nova-specific DSL tags and attributes while providing
+      syntax highlighting for Nova SFC sections, template tags, attributes, strings, comments,
+      JavaScript/TypeScript-like keywords and NovaCSS theme declarations.
+    </p>
+    <p>
+      It also includes Nova and NovaCSS file icons, New File actions, component and prop completion from
+      Nova manifests, a Nova Components tool window, folding, and go-to-declaration for local Nova files,
+      asset paths and manifest component sources.
+    </p>
+  ]]></description>
+
+  <change-notes><![CDATA[
+    <ul>
+      <li>Added Nova DSL and NovaCSS file types for <code>.nova</code> and <code>.novacss</code>.</li>
+      <li>Added New menu actions for Nova DSL File and NovaCSS File.</li>
+      <li>Added automatic override for existing <code>.nova</code> and <code>.novacss</code> file associations.</li>
+      <li>Updated Nova DSL and NovaCSS file icons to use the Nova heart logo.</li>
+      <li>Added Ctrl+B / Go To Declaration for <code>.nova</code> imports, <code>src</code> includes and built-in Nova DSL components.</li>
+      <li>Added Nova component registry panel, manifest-backed completions and Nova folding support.</li>
+      <li>Cached component manifests and replaced recursive project scanning with bounded package lookup to avoid UI freezes.</li>
+      <li>Changed Nova Components panel to an expandable component/prop tree with snippet insertion and drag-and-drop into editors.</li>
+    </ul>
+  ]]></change-notes>
+
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileType
+      name="Nova DSL"
+      implementationClass="dev.engine2d.nova.NovaFileType"
+      fieldName="INSTANCE"
+      language="Nova"
+      extensions="nova" />
+
+    <fileType
+      name="NovaCSS"
+      implementationClass="dev.engine2d.nova.NovaCssFileType"
+      fieldName="INSTANCE"
+      language="NovaCSS"
+      extensions="novacss" />
+
+    <lang.syntaxHighlighterFactory
+      language="Nova"
+      implementationClass="dev.engine2d.nova.NovaSyntaxHighlighterFactory" />
+
+    <lang.syntaxHighlighterFactory
+      language="NovaCSS"
+      implementationClass="dev.engine2d.nova.NovaCssSyntaxHighlighterFactory" />
+
+    <colorSettingsPage implementation="dev.engine2d.nova.NovaColorSettingsPage" />
+
+    <postStartupActivity implementation="dev.engine2d.nova.NovaFileTypeAssociationStartupActivity" />
+
+    <gotoDeclarationHandler implementation="dev.engine2d.nova.NovaGotoDeclarationHandler" />
+
+    <completion.contributor language="Nova" implementationClass="dev.engine2d.nova.NovaCompletionContributor" />
+
+    <lang.foldingBuilder language="Nova" implementationClass="dev.engine2d.nova.NovaFoldingBuilder" />
+
+    <toolWindow
+      id="Nova Components"
+      anchor="right"
+      factoryClass="dev.engine2d.nova.NovaComponentsToolWindowFactory"
+      icon="/icons/nova-heart-16.png" />
+  </extensions>
+
+  <actions>
+    <action
+      id="dev.engine2d.nova.createNovaDslFile"
+      class="dev.engine2d.nova.CreateNovaDslFileAction"
+      text="Nova DSL File"
+      description="Create a Nova .nova DSL file"
+      icon="/icons/nova-heart-16.png">
+      <add-to-group group-id="NewGroup" anchor="last" />
+    </action>
+
+    <action
+      id="dev.engine2d.nova.createNovaCssFile"
+      class="dev.engine2d.nova.CreateNovaCssFileAction"
+      text="NovaCSS File"
+      description="Create a NovaCSS .novacss stylesheet"
+      icon="/icons/nova-heart-16.png">
+      <add-to-group group-id="NewGroup" anchor="last" />
+    </action>
+  </actions>
+</idea-plugin>
