@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.engine2d"
-version = "0.5.6"
+version = "0.5.7"
 
 kotlin {
   jvmToolchain(21)
@@ -57,6 +57,7 @@ intellijPlatform {
         <li>Fixed startup file association threading and removed unsupported plugin descriptor URL element.</li>
         <li>Removed deprecated project root API usages reported by JetBrains Plugin Verifier.</li>
         <li>Improved Nova syntax highlighting for script blocks and bound attribute expressions.</li>
+        <li>Added Reformat Code support for wrapping long Nova DSL tags across multiple lines.</li>
       </ul>
     """.trimIndent()
 

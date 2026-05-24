@@ -34,6 +34,7 @@
       <li>Fixed startup file association threading and removed unsupported plugin descriptor URL element.</li>
       <li>Removed deprecated project root API usages reported by JetBrains Plugin Verifier.</li>
       <li>Improved Nova syntax highlighting for script blocks and bound attribute expressions.</li>
+      <li>Added Reformat Code support for wrapping long Nova DSL tags across multiple lines.</li>
     </ul>
   ]]></change-notes>
 
@@ -71,6 +72,8 @@
     <completion.contributor language="Nova" implementationClass="dev.engine2d.nova.NovaCompletionContributor" />
 
     <lang.foldingBuilder language="Nova" implementationClass="dev.engine2d.nova.NovaFoldingBuilder" />
+
+    <formattingService implementation="dev.engine2d.nova.NovaFormattingService" />
 
     <toolWindow
       id="Nova Components"
