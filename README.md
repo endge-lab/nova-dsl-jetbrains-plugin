@@ -1,113 +1,52 @@
-# Nova DSL JetBrains Plugin
+# Nova DSL
 
-MVP-плагин для JetBrains IDE, который регистрирует `.nova` и `.novacss` как отдельные file types. Это убирает Vue false-positive warnings для Nova-only props и добавляет базовую подсветку:
+JetBrains IDE support for Engine2D/Nova `.nova` and `.novacss` files.
 
-- SFC-теги `<script>`, `<template>`, `<style>`;
-- Nova/UI Kit/Timeline DSL tags;
-- attributes, bound attributes, events и slots;
-- strings, braces, comments;
-- ключевые слова TypeScript/NovaCSS, включая `@theme`.
-- брендированную plugin logo и file icon на основе `public/nova-logo.png`.
-- пункты `New -> Nova DSL File` и `New -> NovaCSS File`.
-- автоматический override расширений `*.nova` и `*.novacss` на file types плагина после установки.
-- `Ctrl+B` / `Go To Declaration` для локальных `.nova` импортов, `<template src>`, `<Component src>`, asset paths и компонентов из Nova manifests.
-- панель `Nova Components` справа: список компонентов, краткое описание, props и вставка snippet.
-- completion для DSL tags и props из `nova-components.json`.
-- folding для SFC-блоков, вложенных DSL-тегов и комментариев.
+## Features
 
-## Установка из исходников
+- Dedicated file types for `.nova` and `.novacss`.
+- Nova heart file icons and New File actions.
+- Syntax highlighting for Nova SFC blocks, DSL tags, attributes, strings, comments and NovaCSS theme declarations.
+- Code folding for SFC blocks, comments and nested Nova DSL tags.
+- Code completion for Nova component tags and props.
+- `Go to Declaration` for local `.nova` files, `<template src>`, `<Component src>`, asset paths and manifest component sources.
+- `Nova Components` tool window with searchable components, compact prop documentation, snippets and drag-and-drop insertion.
+- Automatic file association for `.nova` and `.novacss` after plugin installation.
 
-1. Откройте терминал в корне репозитория плагина.
-2. Соберите plugin zip:
+## Installation
 
-```bash
-gradle buildPlugin
-```
+Install the plugin from JetBrains Marketplace after publication, or install a local plugin ZIP:
 
-Если Gradle не установлен глобально, откройте папку плагина как Gradle project в IntelliJ IDEA/WebStorm и запустите task `Tasks > intellij platform > buildPlugin`.
-
-Проект настроен на Java 21 через локальный Homebrew path:
-
-```properties
-org.gradle.java.home=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
-```
-
-Это важно для macOS, где Homebrew может держать глобальным Java более новую версию, несовместимую с Kotlin compiler.
-
-3. В IDE откройте:
-
-```txt
+```text
 Settings / Preferences
-→ Plugins
-→ ⚙
-→ Install Plugin from Disk...
+-> Plugins
+-> Gear icon
+-> Install Plugin from Disk...
 ```
 
-4. Выберите zip из:
+Select:
 
-```txt
-build/distributions/
+```text
+build/distributions/jetbrains-nova-plugin-0.5.3.zip
 ```
 
-5. Перезапустите IDE.
+Restart the IDE after installation.
 
-## Проверка
+## Usage
 
-После установки файл `*.nova` должен открываться как `Nova DSL`, а не как Vue SFC или plain text:
+Create files from the project tree:
 
-```txt
-Settings / Preferences
-→ Editor
-→ File Types
-→ Nova DSL
+```text
+New -> Nova DSL File
+New -> NovaCSS File
 ```
 
-Если раньше `*.nova` был вручную привязан к Vue:
+Open the `Nova Components` tool window to browse available components and props. You can select a component or selected props and either:
 
-```txt
-Settings / Preferences
-→ Editor
-→ File Types
-→ Vue.js Single File Component
-→ Remove: *.nova
-```
+- click `Insert snippet`;
+- drag the selection into an editor.
 
-Затем проверьте, что `*.nova` есть в `Nova DSL`.
-
-Плагин также делает это автоматически при старте проекта: если `*.nova` или `*.novacss` были привязаны к Vue, HTML, CSS или plain text, association будет перенесен на `Nova DSL` / `NovaCSS`.
-
-Для NovaCSS проверьте:
-
-```txt
-Settings / Preferences
-→ Editor
-→ File Types
-→ NovaCSS
-```
-
-Там должен быть `*.novacss`.
-
-Создание файлов доступно из project tree:
-
-```txt
-Right click directory
-→ New
-→ Nova DSL File
-```
-
-и:
-
-```txt
-Right click directory
-→ New
-→ NovaCSS File
-```
-
-## Навигация
-
-Плагин добавляет легкий `Go To Declaration` без запуска Nova compiler language service.
-
-Работают переходы:
+Example supported navigation:
 
 ```vue
 <script setup lang="ts">
@@ -118,33 +57,13 @@ import AirportTimeline from './ui/AirportTimeline.nova'
   <AirportTimeline />
   <template src="./groups/GroupPanel.nova" />
   <Component src="./panels/Inspector.nova" />
+  <Icon src="../assets/icons/crane.svg" />
 </template>
 ```
 
-`Ctrl+B` на `AirportTimeline`, строке `src="./..."` или импортной строке открывает соответствующий `.nova` файл.
-Для assets также работают строки `src`, `source`, `icon`, `background`, `fill-pattern`:
+## Component Manifests
 
-```vue
-<Icon src="../assets/icons/crane.svg" />
-<Rect background="../assets/patterns/weekend.png" />
-```
-
-Для встроенных компонентов переход открывает исходники в workspace:
-
-```vue
-<Root>
-  <Flex>
-    <TextBlock text="Nova" />
-  </Flex>
-
-  <TimelineChart.Root>
-    <TimelineChart.GroupPanel />
-    <TimelineChart.GroupColumn id="readiness" />
-  </TimelineChart.Root>
-</Root>
-```
-
-Компоненты берутся из bundled/project manifests:
+The plugin reads bundled Nova manifests and project manifests declared in `package.json`:
 
 ```json
 {
@@ -154,42 +73,33 @@ import AirportTimeline from './ui/AirportTimeline.nova'
 }
 ```
 
-Панель `Nova Components` открывается справа. В ней можно искать компонент, смотреть русское описание и props, вставлять базовый snippet и открывать source, если он указан в manifest.
+Manifest data powers component completion, prop completion, the `Nova Components` tool window and source navigation.
 
-Сейчас это файловая навигация по manifest/source paths. Точный переход на symbol-level declaration внутри TypeScript будет частью следующего language-service слоя.
+## Build From Source
 
-## Marketplace
+Requirements:
 
-Первую публикацию нового плагина JetBrains требует делать вручную через Marketplace UI:
+- Java 21
+- Gradle
 
-```txt
-JetBrains Marketplace
-→ Profile
-→ Add new plugin
-→ upload build/distributions/jetbrains-nova-plugin-0.5.2.zip
-```
-
-После первой публикации можно использовать Gradle:
+Build:
 
 ```bash
-export JETBRAINS_MARKETPLACE_TOKEN="perm:..."
-export JETBRAINS_MARKETPLACE_CHANNEL="default"
-
-gradle publishPlugin
+gradle buildPlugin
 ```
 
-Для signing используются environment variables. Секреты нельзя коммитить в репозиторий:
+Verify plugin configuration:
 
 ```bash
-export JETBRAINS_CERTIFICATE_CHAIN="$(cat certificate/chain.crt)"
-export JETBRAINS_PRIVATE_KEY="$(cat certificate/private.pem)"
-export JETBRAINS_PRIVATE_KEY_PASSWORD="..."
-
-gradle signPlugin
+gradle verifyPluginConfiguration
 ```
 
-Если signing variables не заданы, локальная сборка `gradle buildPlugin` продолжает работать и выпускает unsigned zip для ручной установки.
+The plugin ZIP is generated in:
 
-## Текущие ограничения
+```text
+build/distributions/
+```
 
-Это первый слой IDE support. Он не запускает `@endge/nova-compiler` language service и не делает полноценный TypeScript/Vue PSI внутри `<script setup>`. Следующий шаг: добавить Node worker поверх `@endge/nova-compiler`, чтобы IDE показывала настоящие Nova diagnostics, completion и symbol-level go-to-definition.
+## License
+
+Apache License 2.0.
