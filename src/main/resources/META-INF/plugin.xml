@@ -40,6 +40,7 @@
       <li>Added NovaCSS block folding with selector placeholders and self-managed line comments.</li>
       <li>Enabled Reformat Code for Nova DSL and NovaCSS files, including CSS-like NovaCSS block formatting.</li>
       <li>Highlighted short Nova directive values such as <code>for</code>, <code>if</code>, <code>show</code> and <code>model</code> as TypeScript-like expressions.</li>
+      <li>Added Nova expression references for local declarations and imported symbols, so Find Usages and navigation can see DSL usages.</li>
     </ul>
   ]]></change-notes>
 
@@ -80,6 +81,7 @@
     <gotoDeclarationHandler implementation="dev.engine2d.nova.NovaGotoDeclarationHandler" />
 
     <completion.contributor language="Nova" implementationClass="dev.engine2d.nova.NovaCompletionContributor" />
+    <psi.referenceContributor language="Nova" implementation="dev.engine2d.nova.NovaReferenceContributor" />
 
     <lang.foldingBuilder language="Nova" implementationClass="dev.engine2d.nova.NovaFoldingBuilder" />
     <lang.foldingBuilder language="NovaCSS" implementationClass="dev.engine2d.nova.NovaCssFoldingBuilder" />

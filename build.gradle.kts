@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.engine2d"
-version = "0.5.12"
+version = "0.5.13"
 
 kotlin {
   jvmToolchain(21)
@@ -63,6 +63,7 @@ intellijPlatform {
         <li>Added NovaCSS block folding with selector placeholders and self-managed line comments.</li>
         <li>Enabled Reformat Code for Nova DSL and NovaCSS files, including CSS-like NovaCSS block formatting.</li>
         <li>Highlighted short Nova directive values such as <code>for</code>, <code>if</code>, <code>show</code> and <code>model</code> as TypeScript-like expressions.</li>
+        <li>Added Nova expression references for local declarations and imported symbols, so Find Usages and navigation can see DSL usages.</li>
       </ul>
     """.trimIndent()
 
