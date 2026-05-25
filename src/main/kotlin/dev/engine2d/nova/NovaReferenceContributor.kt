@@ -113,6 +113,7 @@ private fun resolveLocalDeclaration(
 
 private fun findExportedSymbol(project: Project, targetFile: VirtualFile, name: String): PsiElement? {
   val psiFile = psiFile(project, targetFile) ?: return null
+  NovaJavaScriptPsiBridge.findNamedElement(psiFile, name)?.let { return it }
   val text = psiFile.text
 
   for (pattern in exportedDeclarationPatterns(name)) {

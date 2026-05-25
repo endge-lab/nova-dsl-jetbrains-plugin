@@ -21,6 +21,10 @@ data class NovaComponentDoc(
   val title: String,
   val description: String,
   val source: String?,
+  val packageName: String?,
+  val importSource: String?,
+  val importName: String?,
+  val isGlobal: Boolean,
   val snippet: String,
   val props: List<NovaComponentPropDoc>,
   val groupTitle: String,
@@ -108,6 +112,7 @@ object NovaComponentRegistry {
 
   private fun parseManifest(source: String): List<NovaComponentDoc> {
     val root = runCatching { JsonParser.parseString(source).asJsonObject }.getOrNull() ?: return emptyList()
+    val packageName = root.string("packageName")
     val groups = root.getAsJsonArray("groups") ?: return emptyList()
     val result = mutableListOf<NovaComponentDoc>()
     for (groupElement in groups) {
@@ -134,6 +139,10 @@ object NovaComponentRegistry {
           title = component.string("title") ?: name,
           description = normalizeComponentDescription(name, rawComponentDescription),
           source = component.string("source"),
+          packageName = packageName,
+          importSource = component.string("importSource"),
+          importName = component.string("importName"),
+          isGlobal = component.get("global")?.asBoolean ?: true,
           snippet = component.string("snippet") ?: "<$name />",
           props = props,
           groupTitle = groupTitle,

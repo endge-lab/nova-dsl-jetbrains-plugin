@@ -1,0 +1,7 @@
+<idea-plugin>
+  <extensions defaultExtensionNs="com.intellij">
+    <psi.referenceContributor
+      language="Nova"
+      implementation="dev.engine2d.nova.NovaJavaScriptReferenceContributor" />
+  </extensions>
+</idea-plugin>

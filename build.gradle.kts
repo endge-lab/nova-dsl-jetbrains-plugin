@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.engine2d"
-version = "0.5.13"
+version = "0.5.15"
 
 kotlin {
   jvmToolchain(21)
@@ -64,6 +64,10 @@ intellijPlatform {
         <li>Enabled Reformat Code for Nova DSL and NovaCSS files, including CSS-like NovaCSS block formatting.</li>
         <li>Highlighted short Nova directive values such as <code>for</code>, <code>if</code>, <code>show</code> and <code>model</code> as TypeScript-like expressions.</li>
         <li>Added Nova expression references for local declarations and imported symbols, so Find Usages and navigation can see DSL usages.</li>
+        <li>Added Vue-like Nova component and prop completion with local <code>.nova</code> component auto-imports and live-template snippets.</li>
+        <li>Added NovaCSS completion for at-rules, properties, values and <code>var(--token)</code> usages.</li>
+        <li>Added NovaCSS custom-property references for Go To Declaration and Find Usages.</li>
+        <li>Added an optional JavaScript plugin bridge descriptor while keeping the base plugin platform-only.</li>
       </ul>
     """.trimIndent()
 
