@@ -3,9 +3,11 @@ package dev.engine2d.nova
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReference
@@ -22,6 +24,83 @@ class NovaReferenceContributor : PsiReferenceContributor() {
       PlatformPatterns.psiElement(NovaTokenTypes.IDENTIFIER),
       NovaIdentifierReferenceProvider(),
     )
+    registrar.registerReferenceProvider(
+      PlatformPatterns.psiElement(NovaTokenTypes.STRING),
+      NovaImportPathReferenceProvider(),
+    )
+  }
+}
+
+private class NovaImportPathReferenceProvider : PsiReferenceProvider() {
+  override fun getReferencesByElement(
+    element: PsiElement,
+    context: ProcessingContext,
+  ): Array<PsiReference> {
+    if (element.containingFile !is NovaPsiFile) return PsiReference.EMPTY_ARRAY
+    if (element.elementType != NovaTokenTypes.STRING) return PsiReference.EMPTY_ARRAY
+    val sourceFile = element.containingFile.virtualFile ?: return PsiReference.EMPTY_ARRAY
+    val source = importPathValue(element) ?: return PsiReference.EMPTY_ARRAY
+    if (!source.startsWith(".")) return PsiReference.EMPTY_ARRAY
+    if (!isImportSourceString(element)) return PsiReference.EMPTY_ARRAY
+    if (resolveImportFile(sourceFile, source) == null) return PsiReference.EMPTY_ARRAY
+    return arrayOf(NovaImportPathReference(element, source))
+  }
+
+  private fun isImportSourceString(element: PsiElement): Boolean {
+    val text = element.containingFile.text
+    val prefix = text.substring(maxOf(0, element.textRange.startOffset - 160), element.textRange.startOffset)
+    return IMPORT_SOURCE_PREFIX_PATTERN.containsMatchIn(prefix)
+  }
+}
+
+private class NovaImportPathReference(
+  element: PsiElement,
+  private val source: String,
+) : PsiReferenceBase<PsiElement>(
+  element,
+  importPathTextRange(element),
+  false,
+) {
+  override fun resolve(): PsiElement? {
+    val sourceFile = element.containingFile.virtualFile ?: return null
+    val target = resolveImportFile(sourceFile, source) ?: return null
+    return PsiManager.getInstance(element.project).findFile(target)
+  }
+
+  override fun handleElementRename(newElementName: String): PsiElement {
+    val normalized = source.substringBefore('?')
+    val query = source.removePrefix(normalized)
+    val slash = normalized.lastIndexOf('/')
+    val nextPath = if (slash >= 0) {
+      normalized.substring(0, slash + 1) + newElementName
+    } else {
+      newElementName
+    }
+    return replaceReferencePath(nextPath + query)
+  }
+
+  override fun bindToElement(targetElement: PsiElement): PsiElement {
+    val currentFile = element.containingFile.virtualFile ?: return element
+    val currentParent = currentFile.parent ?: return element
+    val targetFile = targetElement.containingFile?.virtualFile ?: return element
+    val relative = VfsUtilCore.getRelativePath(targetFile, currentParent, '/') ?: return element
+    val normalized = if (relative.startsWith(".")) relative else "./$relative"
+    val query = source.substringAfter('?', missingDelimiterValue = "")
+      .takeIf { it.isNotEmpty() }
+      ?.let { "?$it" }
+      ?: ""
+    return replaceReferencePath(normalized + query)
+  }
+
+  override fun getVariants(): Array<Any> = emptyArray()
+
+  private fun replaceReferencePath(newPath: String): PsiElement {
+    val file = element.containingFile ?: return element
+    val document = PsiDocumentManager.getInstance(element.project).getDocument(file) ?: return element
+    val range = rangeInElement.shiftRight(element.textRange.startOffset)
+    document.replaceString(range.startOffset, range.endOffset, newPath)
+    PsiDocumentManager.getInstance(element.project).commitDocument(document)
+    return file.findElementAt(range.startOffset) ?: element
   }
 }
 
@@ -148,6 +227,18 @@ private fun resolveImportFile(sourceFile: VirtualFile, rawPath: String): Virtual
   return null
 }
 
+private fun importPathValue(element: PsiElement): String? {
+  val text = element.text
+  if (text.length < 2) return null
+  val quote = text.first()
+  if ((quote != '"' && quote != '\'' && quote != '`') || text.last() != quote) return null
+  return text.substring(1, text.length - 1)
+}
+
+private fun importPathTextRange(element: PsiElement): TextRange {
+  return if (element.textLength >= 2) TextRange(1, element.textLength - 1) else TextRange(0, element.textLength)
+}
+
 private fun importCandidates(path: String): List<String> {
   val hasExtension = path.substringAfterLast('/', path).contains('.')
   if (hasExtension) return emptyList()
@@ -205,6 +296,9 @@ private val DEFAULT_IMPORT_PATTERN = Regex(
 )
 private val NAMESPACE_IMPORT_PATTERN = Regex(
   """import\s+\*\s+as\s+([A-Za-z_$][\w$]*)\s+from\s+['"]([^'"]+)['"]""",
+)
+private val IMPORT_SOURCE_PREFIX_PATTERN = Regex(
+  """(?:^|[\n;])\s*import\s+[\s\S]*?\s+from\s*$""",
 )
 private val DEFAULT_EXPORT_PATTERN = Regex(
   """\bexport\s+default\s+(?:(?:async\s+)?function|class)?\s*(?<name>[A-Za-z_$][\w$]*)?""",

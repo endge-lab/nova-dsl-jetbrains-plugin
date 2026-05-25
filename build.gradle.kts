@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.engine2d"
-version = "0.5.15"
+version = "0.5.16"
 
 kotlin {
   jvmToolchain(21)
@@ -68,6 +68,7 @@ intellijPlatform {
         <li>Added NovaCSS completion for at-rules, properties, values and <code>var(--token)</code> usages.</li>
         <li>Added NovaCSS custom-property references for Go To Declaration and Find Usages.</li>
         <li>Added an optional JavaScript plugin bridge descriptor while keeping the base plugin platform-only.</li>
+        <li>Added refactoring-aware references for relative import paths in <code>.nova</code> files.</li>
       </ul>
     """.trimIndent()
 
