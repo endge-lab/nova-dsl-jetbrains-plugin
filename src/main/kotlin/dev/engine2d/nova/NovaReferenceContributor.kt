@@ -40,7 +40,6 @@ private class NovaImportPathReferenceProvider : PsiReferenceProvider() {
     if (element.elementType != NovaTokenTypes.STRING) return PsiReference.EMPTY_ARRAY
     val sourceFile = element.containingFile.virtualFile ?: return PsiReference.EMPTY_ARRAY
     val source = importPathValue(element) ?: return PsiReference.EMPTY_ARRAY
-    if (!source.startsWith(".")) return PsiReference.EMPTY_ARRAY
     if (!isImportSourceString(element)) return PsiReference.EMPTY_ARRAY
     if (resolveImportFile(sourceFile, source) == null) return PsiReference.EMPTY_ARRAY
     return arrayOf(NovaImportPathReference(element, source))
@@ -83,8 +82,9 @@ private class NovaImportPathReference(
     val currentFile = element.containingFile.virtualFile ?: return element
     val currentParent = currentFile.parent ?: return element
     val targetFile = targetElement.containingFile?.virtualFile ?: return element
+    val aliasPath = aliasPathForTarget(currentFile, targetFile, source)
     val relative = VfsUtilCore.getRelativePath(targetFile, currentParent, '/') ?: return element
-    val normalized = if (relative.startsWith(".")) relative else "./$relative"
+    val normalized = aliasPath ?: if (relative.startsWith(".")) relative else "./$relative"
     val query = source.substringAfter('?', missingDelimiterValue = "")
       .takeIf { it.isNotEmpty() }
       ?.let { "?$it" }
@@ -216,11 +216,27 @@ private fun findDefaultExport(project: Project, targetFile: VirtualFile): PsiEle
 private fun resolveImportFile(sourceFile: VirtualFile, rawPath: String): VirtualFile? {
   val path = rawPath.substringBefore('?')
   val parent = if (sourceFile.isDirectory) sourceFile else sourceFile.parent ?: return null
-  val direct = VfsUtil.findRelativeFile(path, parent)
+  if (path.startsWith(".")) {
+    return resolvePathWithCandidates(parent, path)
+  }
+
+  for (alias in pathAliases(sourceFile)) {
+    if (!path.startsWith(alias.aliasPrefix)) continue
+    val suffix = path.removePrefix(alias.aliasPrefix)
+    val targetPath = alias.targetPrefix + suffix
+    val resolved = resolvePathWithCandidates(alias.root, targetPath)
+    if (resolved != null) return resolved
+  }
+
+  return null
+}
+
+private fun resolvePathWithCandidates(root: VirtualFile, path: String): VirtualFile? {
+  val direct = VfsUtil.findRelativeFile(path, root)
   if (direct != null && !direct.isDirectory) return direct
 
   for (candidate in importCandidates(path)) {
-    val file = VfsUtil.findRelativeFile(candidate, parent)
+    val file = VfsUtil.findRelativeFile(candidate, root)
     if (file != null && !file.isDirectory) return file
   }
 
@@ -246,9 +262,66 @@ private fun importCandidates(path: String): List<String> {
   return IMPORT_EXTENSIONS.map { "$path$it" } + IMPORT_EXTENSIONS.map { "$path/index$it" }
 }
 
+private fun aliasPathForTarget(sourceFile: VirtualFile, targetFile: VirtualFile, originalSource: String): String? {
+  if (!originalSource.startsWith("@/")) return null
+
+  for (alias in pathAliases(sourceFile)) {
+    if (alias.aliasPrefix != "@/") continue
+    val aliasRoot = VfsUtil.findRelativeFile(alias.targetPrefix.removeSuffix("/"), alias.root) ?: continue
+    val relative = VfsUtilCore.getRelativePath(targetFile, aliasRoot, '/') ?: continue
+    return alias.aliasPrefix + relative
+  }
+
+  return null
+}
+
+private fun pathAliases(sourceFile: VirtualFile): List<TsPathAlias> {
+  val parent = if (sourceFile.isDirectory) sourceFile else sourceFile.parent ?: return emptyList()
+  val configDir = generateSequence(parent) { it.parent }
+    .firstOrNull { dir ->
+      TS_CONFIG_NAMES.any { dir.findChild(it) != null } || dir.findChild("src") != null
+    }
+    ?: return emptyList()
+
+  val fromConfig = TS_CONFIG_NAMES
+    .asSequence()
+    .mapNotNull { configDir.findChild(it) }
+    .flatMap { file -> parsePathAliases(file).asSequence() }
+    .toList()
+
+  if (fromConfig.isNotEmpty()) return fromConfig
+
+  return if (configDir.findChild("src") != null) {
+    listOf(TsPathAlias("@/", "src/", configDir))
+  } else {
+    emptyList()
+  }
+}
+
+private fun parsePathAliases(configFile: VirtualFile): List<TsPathAlias> {
+  val text = runCatching { String(configFile.contentsToByteArray()) }.getOrNull() ?: return emptyList()
+  val result = mutableListOf<TsPathAlias>()
+  PATH_ALIAS_PATTERN.findAll(text).forEach { match ->
+    val alias = match.groupValues[1]
+    val target = match.groupValues[2]
+    val aliasPrefix = alias.substringBefore("*")
+    val targetPrefix = target.substringBefore("*").removePrefix("./")
+    if (aliasPrefix.isNotBlank() && targetPrefix.isNotBlank()) {
+      result += TsPathAlias(aliasPrefix, targetPrefix, configFile.parent)
+    }
+  }
+  return result
+}
+
 private fun psiFile(project: Project, file: VirtualFile): PsiFile? {
   return PsiManager.getInstance(project).findFile(file)
 }
+
+private data class TsPathAlias(
+  val aliasPrefix: String,
+  val targetPrefix: String,
+  val root: VirtualFile,
+)
 
 private fun scriptSetupRange(text: String): TextRange? {
   val open = SCRIPT_SETUP_OPEN_PATTERN.find(text) ?: return null
@@ -300,9 +373,11 @@ private val NAMESPACE_IMPORT_PATTERN = Regex(
 private val IMPORT_SOURCE_PREFIX_PATTERN = Regex(
   """(?:^|[\n;])\s*import\s+[\s\S]*?\s+from\s*$""",
 )
+private val PATH_ALIAS_PATTERN = Regex(""""([^"]*\*)"\s*:\s*\[\s*"([^"]*\*)"""")
 private val DEFAULT_EXPORT_PATTERN = Regex(
   """\bexport\s+default\s+(?:(?:async\s+)?function|class)?\s*(?<name>[A-Za-z_$][\w$]*)?""",
 )
 private val SCRIPT_SETUP_OPEN_PATTERN = Regex("""<script\b[^>]*\bsetup\b[^>]*>""", RegexOption.IGNORE_CASE)
 private val SCRIPT_CLOSE_PATTERN = Regex("""</script\s*>""", RegexOption.IGNORE_CASE)
 private val IMPORT_EXTENSIONS = listOf(".ts", ".tsx", ".js", ".jsx", ".mjs", ".mts", ".nova")
+private val TS_CONFIG_NAMES = listOf("tsconfig.app.json", "tsconfig.json", "jsconfig.json")
